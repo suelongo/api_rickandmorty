@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rick and Morty API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #333;
+            color: #eee;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #444;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+            animation: fadeIn 1s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        h1 {
+            text-align: center;
+            color: #eee;
+        }
+        h2,h3 {
+            text-align: center;
+            color: #eee;
+            margin-top: 0.5rem;
+        }
+        #characters {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-gap: 20px;
+            justify-items: center;
+        }
+        .character {
+            border: 1px solid #555;
+            border-radius: 10px;
+            padding: 10px;
+            background-color: #555;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease-in-out;
+        }
+        .character:hover {
+            transform: scale(1.05);
+        }
+        .character img {
+            max-width: 100%;
+            border-radius: 10px;
+        }
+        .character h3 {
+            margin-top: 10px;
+            text-align: center;
+            color: #ccc;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+            color: #ccc;
+        }
+        select {
+            padding: 5px;
+            width: 100%;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Rick and Morty API</h1>
+        <h2>Autor<br> Josue Longoria</h2>
+        <h3>Lab Despliegue de Apps</h3>
+        <div class="form-group">
+            <label for="character-select">Escoge tu personaje:</label>
+            <select id="character-select">
+                <option value="">Todos</option>
+                <option value="Rick">Rick</option>
+                <option value="Morty">Morty</option>
+                <option value="Summer">Summer</option>
+                <option value="Jerry">Jerry</option>
+                <option value="Beth">Beth</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="status-select">Estado:</label>
+            <select id="status-select">
+                <option value="">Todos</option>
+                <option value="alive">Vivo</option>
+                <option value="dead">Muerto</option>
+                <option value="unknown">Desconocido</option>
+            </select>
+        </div>
+        <div id="characters"></div>
+    </div>
+
+    <script>
+        const characterSelect = document.getElementById('character-select');
+        const statusSelect = document.getElementById('status-select');
+
+        async function fetchCharacters() {
+            let url = 'https://rickandmortyapi.com/api/character';
+            const characterValue = characterSelect.value;
+            const statusValue = statusSelect.value;
+
+            if (characterValue || statusValue) {
+                url += '?';
+
+                if (characterValue) {
+                    url += `name=${characterValue}&`;
+                }
+
+                if (statusValue) {
+                    url += `status=${statusValue}&`;
+                }
+
+                url = url.slice(0, -1); // Remove trailing "&" or "?" if present
+            }
+
+            const response = await fetch(url);
+            const data = await response.json();
+            const characters = data.results;
+
+            const charactersContainer = document.getElementById('characters');
+            charactersContainer.innerHTML = '';
+
+            characters.forEach(character => {
+                const characterElement = document.createElement('div');
+                characterElement.classList.add('character');
+
+                const image = document.createElement('img');
+                image.src = character.image;
+
+                const name = document.createElement('h3');
+                name.textContent = character.name;
+
+                characterElement.appendChild(image);
+                characterElement.appendChild(name);
+
+                charactersContainer.appendChild(characterElement);
+            });
+        }
+
+        characterSelect.addEventListener('change', fetchCharacters);
+        statusSelect.addEventListener('change', fetchCharacters);
+
+        fetchCharacters();
+    </script>
+</body>
+</html>
